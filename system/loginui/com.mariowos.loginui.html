@@ -1,0 +1,304 @@
+<!-- 
+mariowOS Login User Interface - (C) 2025 mariowstech and the mariowOS team 
+Licensed under the Apache License, Version 2.0; you can use this file if you give credits to the original creators and you may not use this file except in compliance with the License. 
+Obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. 
+This project use open source and free fonts sourced from Google Fonts. Google Fonts is a trademark of Google LCC, privacy docs are at https://developers.google.com/fonts/faq/privacy 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+html,body {
+  height:100%; margin:0;
+  font-family:'Poppins',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;
+}
+
+body {
+  background:url("/desktop/assets/wallpaper.png") center/cover no-repeat fixed;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; overflow:hidden;
+}
+
+.datetime {
+  position:absolute;
+  top:120px;
+  width:100%;
+  text-align:center;
+  pointer-events:none;
+}
+.datetime .date {
+  font-size:22px;
+  color:rgba(255,255,255,0.94);
+  margin-bottom:6px;
+  text-shadow:0 4px 14px rgba(0,0,0,0.35);
+}
+.datetime .time {
+  font-size:120px;
+  font-weight:600;
+  line-height:0.9;
+  color:rgba(255,255,255,0.98);
+  text-shadow:0 8px 30px rgba(0,0,0,0.45);
+}
+
+.center-stack {
+  position:absolute;
+  bottom:160px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+}
+
+.avatar {
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:url("/desktop/assets/avatar.png") center/cover no-repeat;
+  box-shadow:0 6px 18px rgba(0,0,0,0.55), inset 0 -4px 10px rgba(0,0,0,0.12);
+}
+
+.unlock-pill {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  backdrop-filter:blur(20px);
+  border-radius:999px;
+  width:340px;
+  height:48px;
+  overflow:hidden;
+  border:2px solid transparent;
+  transition:border-color 0.3s ease;
+  box-shadow:0 8px 24px rgba(0,0,0,0.25);
+}
+
+.unlock-pill input {
+  flex:1;
+  height:100%;
+  padding:0 20px;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  border:none;
+  outline:none;
+  color:white;
+  font-size:18px;
+  font-family: 'Poppins';
+}
+
+.unlock-pill button {
+  width:56px;
+  height:100%;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:transform 0.15s ease, background 0.3s ease, box-shadow 0.3s ease;
+  border-top-right-radius:999px;
+  border-bottom-right-radius:999px;
+  position:relative;
+  z-index:2;
+}
+
+.unlock-pill button img {
+  width:20px;
+  height:20px;
+}
+
+.unlock-pill button:hover {
+  transform:scale(1.04);
+}
+
+.unlock-pill button:active {
+  transform:scale(0.95);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.2);
+}
+
+.unlock-pill.wrong {
+  border-color:rgba(255,59,48,1);
+  animation:shake 0.45s ease, fadeBorder 1s forwards;
+}
+
+#loginBtn:hover{
+  background-color:#c0c0c0;
+}
+
+@keyframes shake {
+  0%,100% { transform:translateX(0); }
+  20%,60% { transform:translateX(-6px); }
+  40%,80% { transform:translateX(6px); }
+}
+
+@keyframes fadeBorder {
+  0% { border-color:rgba(255,59,48,1); }
+  100% { border-color:transparent; }
+}
+
+@media (max-width:520px) {
+  .datetime .time { font-size:72px; }
+  .unlock-pill { width:calc(100% - 40px); height:44px; }
+  .avatar { width:52px; height:52px; }
+}
+
+#loginBtn {
+  background-color:#d9d9d9;
+}
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.popup {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 30px 40px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  backdrop-filter: blur(12px);
+}
+.popup h1 {
+  margin-top: 0;
+  font-weight: 600;
+  font-size: 26px;
+  color: #000000;
+}
+.popup p {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 15px;
+  margin: 12px 0 24px;
+}
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+.popup-buttons button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins';
+  font-weight: 500;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.popup-buttons button:hover { transform: scale(1.04); }
+#closePopup { background: #bdbdbd; color: #fff; }
+#redirectPopup { background: #002fff; color: #ffffff; }
+</style>
+</head>
+<body>
+  <div class="datetime" aria-hidden="true">
+    <div class="date" id="date">Loading…</div>
+    <div class="time" id="time">00:00</div>
+  </div>
+
+  <div class="center-stack" role="main">
+    <div class="avatar" aria-hidden="true"></div>
+    <div class="unlock-pill" id="unlockPill" aria-label="Unlock">
+      <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" aria-label="Password">
+      <button id="loginBtn" title="Unlock" aria-label="Unlock">
+        <img src="/desktop/assets/next.png" alt="→">
+      </button>
+    </div>
+  </div>
+
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+      <h1>Enter fallback mode?</h1>
+      <p>Fallback mode is useful if you screwed something up and have no way to recover. To exit this mode, you can press Finder > Exit fallback mode</p>
+      <div class="popup-buttons">
+        <button id="closePopup">No</button>
+        <button id="redirectPopup">Yes</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+function updateDateTime() {
+  const now = new Date();
+  const date = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  const time = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
+  document.getElementById('date').textContent = date;
+  document.getElementById('time').textContent = time;
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+const loginBtn = document.getElementById('loginBtn');
+const passwordInput = document.getElementById('loginPassword');
+const unlockPill = document.getElementById('unlockPill');
+
+passwordInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') attemptUnlock();
+});
+loginBtn.addEventListener('click', attemptUnlock);
+
+let wrongTimeout = null;
+async function attemptUnlock() {
+  const pass = passwordInput.value.trim();
+  if (!pass) return;
+  try {
+    const resp = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ password: pass })
+    });
+    const text = await resp.text();
+    const lowered = text.toLowerCase();
+    if (lowered.includes('❌') || lowered.includes('wrong') || lowered.includes('no password')) {
+      showWrong();
+    } else {
+      window.location.href = '/desktop/com.mariowos.desktop.html';
+    }
+  } catch {
+    showWrong();
+  }
+}
+function showWrong() {
+  unlockPill.classList.add('wrong');
+  passwordInput.value = '';
+  clearTimeout(wrongTimeout);
+  wrongTimeout = setTimeout(() => unlockPill.classList.remove('wrong'), 1000);
+  passwordInput.focus();
+}
+window.addEventListener('load', () => passwordInput.focus());
+
+const popupOverlay = document.getElementById('popupOverlay');
+const closePopup = document.getElementById('closePopup');
+const redirectPopup = document.getElementById('redirectPopup');
+
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && !popupOverlay.style.display) {
+    e.preventDefault();
+    popupOverlay.style.display = 'flex';
+  }
+});
+
+closePopup.addEventListener('click', () => {
+  popupOverlay.style.display = 'none';
+});
+
+redirectPopup.addEventListener('click', () => {
+  window.location.href = '/desktop/fallback/com.mariowos.desktop.html';
+});
+</script>
+</body>
+</html>
+
+<!-- i just want to tell you how much i love you lili -->
+<!-- you are the light of my life and the reason i wake up every morning -->
+<!-- thank you for being you and for loving me -->

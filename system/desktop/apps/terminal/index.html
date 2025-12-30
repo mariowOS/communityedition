@@ -1,0 +1,337 @@
+<!-- 
+mariowOS Terminal - (C) 2025 mariowstech and the mariowOS team 
+Licensed under the Apache License, Version 2.0; you can use this file if you give credits to the original creators and you may not use this file except in compliance with the License. 
+Obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. 
+This project use open source and free fonts sourced from Google Fonts. Google Fonts is a trademark of Google LCC, privacy docs are at https://developers.google.com/fonts/faq/privacy 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @font-face {
+      font-family: 'Unifont Ex Mono';
+      src: url('unifont-ex-mono.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Unifont Ex Mono', monospace !important;
+      color: #fff;
+    }
+
+    html, body {
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .terminal {
+      padding: 20px;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      height: 100vh;
+      overflow-y: auto;
+      user-select: none;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .terminal::-webkit-scrollbar {
+      display: none;
+    }
+
+    .user {
+      color: #00ff00;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 18px;
+      background: #00ff00;
+      margin-left: 2px;
+      vertical-align: middle;
+    }
+
+    ::selection {
+      background: #fff;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="terminal" id="terminal" tabindex="0"></div>
+
+  <script>
+    const terminal = document.getElementById("terminal");
+
+    let inputBuffer = "";
+    let cursorVisible = true;
+    let history = [];
+    let historyIndex = -1;
+
+    // Initialize
+    let currentInput, currentCursor;
+    newPrompt();
+
+    // Blink cursor
+    setInterval(() => {
+      if (currentCursor)
+        currentCursor.style.visibility = cursorVisible ? "visible" : "hidden";
+      cursorVisible = !cursorVisible;
+    }, 500);
+
+    // Focus terminal when clicked
+    terminal.addEventListener("click", () => terminal.focus());
+    window.addEventListener("click", () => terminal.focus());
+
+    document.addEventListener("keydown", (e) => {
+      if (
+        ["Backspace", "Enter", "ArrowUp", "ArrowDown"].includes(e.key) ||
+        (e.key.length === 1 && !e.ctrlKey && !e.metaKey)
+      ) {
+        e.preventDefault();
+      }
+
+      if (!currentInput) return;
+
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+        inputBuffer += e.key;
+      } else if (e.key === "Backspace") {
+        inputBuffer = inputBuffer.slice(0, -1);
+      } else if (e.key === "Enter") {
+        const cmd = inputBuffer.trim();
+        executeCommand(cmd);
+        history.push(cmd);
+        historyIndex = history.length;
+        inputBuffer = "";
+        return;
+      } else if (e.key === "ArrowUp") {
+        if (historyIndex > 0) {
+          historyIndex--;
+          inputBuffer = history[historyIndex];
+        }
+      } else if (e.key === "ArrowDown") {
+        if (historyIndex < history.length - 1) {
+          historyIndex++;
+          inputBuffer = history[historyIndex];
+        } else {
+          historyIndex = history.length;
+          inputBuffer = "";
+        }
+      }
+
+      currentInput.textContent = inputBuffer;
+      terminal.scrollTop = terminal.scrollHeight;
+    });
+
+    function newPrompt() {
+      const line = document.createElement("div");
+      line.innerHTML = `<span class="user">user@mariowos</span>:$ <span class="input"></span><span class="cursor"></span>`;
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+
+      currentInput = line.querySelector(".input");
+      currentCursor = line.querySelector(".cursor");
+      inputBuffer = "";
+    }
+
+    function executeCommand(cmd) {
+      if (!cmd) {
+        newPrompt();
+        return;
+      }
+
+      const outputLine = document.createElement("div");
+
+      switch (cmd.split(" ")[0]) {
+        case "help":
+        outputLine.innerText = `Commands:
+        help - Show help                          addkey - adds a key into the system's keyring
+        about - About this terminal               delkey - deletes a key from the system's keyring
+        clear - Clear the screen                  listkeys - list all the keys in the system's keyring 
+        echo [text] - Print a message             fetch - show system information
+        math [expr] - Simple math calculator      lili - show lili command`;
+          terminal.appendChild(outputLine);
+          break;
+
+        case "about":
+          outputLine.innerText = `mariowOS Terminal (preview) - (C) 2025 mariowstech and the mariowOS team`;
+          terminal.appendChild(outputLine);
+          break;
+
+        case "clear":
+          terminal.innerHTML = "";
+          currentInput = null;
+          currentCursor = null;
+          inputBuffer = "";
+          newPrompt();
+          return;
+
+        case "echo":
+          outputLine.innerText = cmd.slice(5);
+          terminal.appendChild(outputLine);
+          break;
+
+        case "math":
+          try {
+            const expr = cmd.slice(5);
+            const result = eval(expr);
+            outputLine.innerText = `${expr} = ${result}`;
+          } catch {
+            outputLine.innerText = "E: Invalid expression, check syntax.";
+          }
+          terminal.appendChild(outputLine);
+          break;
+
+          case "lili": // the most important command that there is, because lili is the love of my life <3
+          outputLine.innerText = `lili ti amo!!!`;
+          terminal.appendChild(outputLine);
+          break;
+
+case "addkey":
+  const keyValue = cmd.slice(7).trim();
+  if (!keyValue) {
+    outputLine.innerText = "E: Please specify a key to add.";
+    terminal.appendChild(outputLine);
+    newPrompt(); // prompt here because no fetch
+    break;
+  }
+
+  fetch("/save-key", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key: keyValue }),
+  })
+    .then((res) => res.text())
+    .then((msg) => {
+      const resultLine = document.createElement("div");
+      resultLine.innerText = msg;
+      terminal.appendChild(resultLine);
+      newPrompt(); // <-- move prompt here
+    })
+    .catch(() => {
+      const errLine = document.createElement("div");
+      errLine.innerText = "E: Failed to save key.";
+      terminal.appendChild(errLine);
+      newPrompt(); // <-- move prompt here
+    });
+  break;
+
+case "listkeys":
+  fetch("/list-keys")
+    .then((res) => res.json())
+    .then((keys) => {
+      const listOutput = document.createElement("div");
+      if (keys.length === 0) {
+        listOutput.innerText = "No keys saved.";
+      } else {
+        listOutput.innerText =
+          "== Saved Keys ==\n" +
+          keys
+            .map(
+              (k, i) =>
+                `${i + 1}. ${k.key} (added ${new Date(k.date).toLocaleString()})`
+            )
+            .join("\n");
+      }
+      terminal.appendChild(listOutput);
+      newPrompt(); // <-- prompt after output
+    })
+    .catch(() => {
+      const errLine = document.createElement("div");
+      errLine.innerText = "E: Failed to list keys.";
+      terminal.appendChild(errLine);
+      newPrompt(); // <-- prompt after error
+    });
+  break;
+
+case "delkey":
+  const keyToDelete = cmd.slice(7).trim();
+  if (!keyToDelete) {
+    outputLine.innerText = "E: Please specify a key to delete.";
+    terminal.appendChild(outputLine);
+    newPrompt(); // prompt here because no fetch
+    break;
+  }
+
+  fetch("/delete-key", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key: keyToDelete }),
+  })
+    .then((res) => res.text())
+    .then((msg) => {
+      const resultLine = document.createElement("div");
+      resultLine.innerText = msg;
+      terminal.appendChild(resultLine);
+      newPrompt(); // <-- prompt after output
+    })
+    .catch(() => {
+      const errLine = document.createElement("div");
+      errLine.innerText = "E: Failed to delete key.";
+      terminal.appendChild(errLine);
+      newPrompt(); // <-- prompt after error
+    });
+  break;
+
+case "fetch":
+  fetch("/sysinfo")
+    .then((res) => res.json())
+    .then((info) => {
+      if (info.error) throw new Error(info.error);
+
+      const hours = Math.floor(info.Uptime / 3600);
+      const minutes = Math.floor((info.Uptime % 3600) / 60);
+
+      const fetchOutput = document.createElement("div");
+      fetchOutput.innerText = `                    
+    @@@@@                            ============Basic Info===========
+ @@@@@@@@@@@      @@@@@@             OS: mariowOS Community Edition
+    @@@@@         @@@@@@             Host kernel: ${info.Kernel}
+     @@@         @@@@@@@@            Uptime: ${hours}h ${minutes}m
+              @@@@@@@@@@@@@@         CPU: ${info.CPU}
+          @@@@@@@@@@@@@@@@@@@@@@     RAM: ${info.RAM} (Free: ${info.FreeRAM})
+        @@@@@@@@@@@@@@@@@@@@@@@@@@   
+           @@@@@@@@@@@@@@@@@@@@      ============Shell Info===========
+               @@@@@@@@@@@@          Shell: mariowOS DE (Tiles) v1.3.1
+                 @@@@@@@@            Build number/date: community_selfsigned 12/30/2025 3:10AM
+       @@         @@@@@@             Kernel: 0.4R-node (LTS) (mwos@mariowos) 
+      @@@@@        @@@@              
+   @@@@@@@@@@@                       © mariowstech and the mariowOS team
+      @@@@@                          All rights reserved.                           
+`;
+      terminal.appendChild(fetchOutput);
+      terminal.scrollTop = terminal.scrollHeight;
+
+      newPrompt();
+    })
+    .catch(() => {
+      const errLine = document.createElement("div");
+      errLine.innerText = "E: Failed to fetch system info.";
+      terminal.appendChild(errLine);
+      newPrompt();
+    });
+  break;
+
+        default:
+          outputLine.innerText = `Command not found: ${cmd}`;
+          terminal.appendChild(outputLine);
+      }
+
+      terminal.scrollTop = terminal.scrollHeight;
+      newPrompt();
+    }
+
+
+  </script>
+</body>
+</html>
