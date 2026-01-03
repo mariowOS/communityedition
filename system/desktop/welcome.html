@@ -8,169 +8,194 @@ This project use open source and free fonts sourced from Google Fonts. Google Fo
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sacramento:wght@400&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        html {
-            font-family: 'Inter', sans-serif;
-        }
-        .font-script {
-            font-family: 'Sacramento', cursive;
-            text-shadow: 
-                1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
-                0 0 8px rgba(0, 0, 0, 0.3); 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body {
-            background-image: url('/desktop/assets/oobewp.png');
-            background-size: cover;
-            background-position: center;
-            overflow: hidden;
-            height: 100vh;
-        }
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
 
-        .ethereal-bg {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease-in;
-        }
+<style>
+html {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+}
 
-        .ethereal-bg::before {
-            content: none;
-        }
+body {
+    background-image: url('/desktop/assets/oobewp.png');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+}
 
-        @keyframes letterDrop {
-            0% {
-                opacity: 0;
-                transform: translateY(-600px) scale(0.8);
-            }
-            60% {
-                opacity: 1;
-                transform: translateY(20px) scale(1.05); 
-            }
-            100% {
-                transform: translateY(0) scale(1);
-                opacity: 1;
-            }
-        }
+.ethereal-bg {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
 
-        .letter {
-            display: inline-block;
-            opacity: 0;
-            animation: letterDrop 1.2s ease-out forwards;
-        }
+/* apple inspired fade in + fade out */
+@keyframes appleFadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        @keyframes buttonBounce {
-            0% {
-                opacity: 0;
-                transform: translateY(100px);
-            }
-            50% {
-                opacity: 0.5;
-                transform: translateY(-15px);
-            }
-            75% {
-                transform: translateY(5px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+@keyframes appleFadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-14px); }
+}
 
-        .animate-bounce-in {
-            animation: buttonBounce 0.8s ease-in-out forwards;
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        .fade-out {
-            animation: fadeOut 0.5s ease-in forwards;
-        }
-    </style>
+/* try to apply the most of liquid glass to the text */
+.apple-in, .apple-out {
+    color: rgba(255,255,255,0.65);
+    letter-spacing: -0.02em;
+    font-style: italic;
+    font-weight: 600;
+    text-shadow:
+        0 0 20px rgba(255,255,255,0.4),
+        0 0 42px rgba(255,255,255,0.3),
+        0 1px 0 rgba(255,255,255,0.95),
+        0 10px 30px rgba(0,0,0,0.25);
+    filter: saturate(1.2);
+}
+
+.apple-in {
+    animation: appleFadeIn 0.8s ease-out forwards;
+}
+
+.apple-out {
+    animation: appleFadeOut 0.6s ease-in forwards;
+}
+
+/* button animations */
+@keyframes buttonIn {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes buttonOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(40px); }
+}
+
+.show-button {
+    animation: buttonIn 0.5s ease-out forwards;
+}
+
+.hide-button {
+    animation: buttonOut 0.5s ease-in forwards;
+}
+
+/* Ensure static glass-text styling too */
+.glass-text {
+    color: rgba(255,255,255,0.65);
+    letter-spacing: -0.02em;
+    font-style: italic;
+    font-weight: 600;
+    text-shadow:
+        0 0 20px rgba(255,255,255,0.4),
+        0 0 42px rgba(255,255,255,0.3),
+        0 1px 0 rgba(255,255,255,0.95),
+        0 10px 30px rgba(0,0,0,0.25);
+    filter: saturate(1.2);
+}
+</style>
 </head>
+
 <body>
 
-    <div id="main-container" class="ethereal-bg relative text-center">
-        <h1 id="welcome-text" class="font-script text-white text-7xl md:text-8xl lg:text-9xl z-10"></h1>
+<div id="main-container" class="ethereal-bg text-center">
+    <h1 id="welcome-text"
+        class="glass-text text-7xl md:text-8xl lg:text-9xl select-none">
+    </h1>
 
-        <div id="action-button" class="absolute bottom-16 opacity-0 z-10">
-            <button id="next-button" class="bg-white text-gray-800 px-8 py-4 rounded-xl shadow-lg transition duration-300 hover:scale-105 active:scale-95" style="border-radius: 999px;">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-            </button>
-        </div>
+    <div id="action-button"
+         class="absolute bottom-16 opacity-0 pointer-events-none">
+        <button id="next-button"
+            class="bg-white text-gray-800 px-8 py-4 shadow-lg transition hover:scale-105 active:scale-95 rounded-full">
+            →
+        </button>
     </div>
+</div>
 
-    <script>
-        const TEXT_TO_ANIMATE = "welcome";
-        const LETTER_ANIMATION_DURATION_S = 1.2; 
-        const LETTER_STAGGER_DELAY_S = 0.1;
-        const NEXT_PAGE_URL = '/desktop/license.html';
-        const FADE_DURATION_MS = 500;
+<script>
+const greetings = [
+    { lang: "en", text: "Hello" },
+    { lang: "it", text: "Ciao" },
+    { lang: "fi", text: "Hei" },
+    { lang: "vi", text: "Xin chào" },
+    { lang: "el", text: "Γεια σας" },
+    { lang: "ka", text: "მოგესალმებით" },
+    { lang: "pl", text: "Witamy" },
+    { lang: "ru", text: "Здравствуйте" }
+];
 
-        const textElement = document.getElementById('welcome-text');
-        const buttonElement = document.getElementById('action-button');
-        const nextButton = document.getElementById('next-button');
-        const mainContainer = document.getElementById('main-container');
+const SWITCH_INTERVAL = 2000;
+const NEXT_PAGE_URL = "/desktop/license.html";
 
-        function animateText() {
-            let totalAnimationDelay = 0;
+let index = 1;
 
-            TEXT_TO_ANIMATE.split('').forEach((char, index) => {
-                const span = document.createElement('span');
-                span.textContent = char;
-                span.classList.add('letter');
-                const delay = index * LETTER_STAGGER_DELAY_S;
-                span.style.animationDelay = `${delay}s`;
-                textElement.appendChild(span);
-                totalAnimationDelay = delay;
-            });
+const textEl = document.getElementById("welcome-text");
+const buttonWrapper = document.getElementById("action-button");
+const nextButton = document.getElementById("next-button");
 
-            const textAnimationFinishTimeMs = (totalAnimationDelay + LETTER_ANIMATION_DURATION_S) * 1000;
-            setTimeout(animateButton, textAnimationFinishTimeMs + 200); 
-        }
+function switchGreeting() {
+    const g = greetings[index];
+    document.documentElement.lang = g.lang;
 
-        function animateButton() {
-            buttonElement.classList.add('animate-bounce-in');
-        }
+    textEl.classList.remove("apple-in");
+    textEl.classList.add("apple-out");
 
-        nextButton.addEventListener('click', () => {
-            mainContainer.classList.add('fade-out');
-            setTimeout(() => {
-                window.location.href = NEXT_PAGE_URL;
-            }, FADE_DURATION_MS);
-        });
+    setTimeout(() => {
+        textEl.textContent = g.text;
+        textEl.classList.remove("apple-out");
+        textEl.classList.add("apple-in");
+    }, 300);
 
-        // doesn't work, thank those sketchy sites that auto f11'd your page without permission
-        // restriction added in chrome 15 and firefox 43 
-        async function requestFullscreen() {
-            try {
-                if (!document.fullscreenElement) {
-                    await document.documentElement.requestFullscreen();
-                }
-            } catch (err) {
-                console.warn("Fullscreen request failed:", err);
-            }
-        }
+    index = (index + 1) % greetings.length;
+}
 
-        window.addEventListener('load', async () => {
-            await requestFullscreen();
-            setTimeout(() => {
-                animateText();
-            }, 500);
-        });
-    </script>
+window.onload = () => {
+    textEl.textContent = greetings[0].text;
+    textEl.classList.add("apple-in");
+
+    setInterval(switchGreeting, SWITCH_INTERVAL);
+};
+
+/* show button when mouse goes near bottom */
+let buttonVisible = false;
+
+document.addEventListener("mousemove", (e) => {
+    const threshold = window.innerHeight * 0.75;
+
+    if (e.clientY > threshold && !buttonVisible) {
+        buttonVisible = true;
+        buttonWrapper.classList.remove("hide-button");
+        buttonWrapper.classList.add("show-button");
+        buttonWrapper.style.opacity = "1";
+        buttonWrapper.style.pointerEvents = "auto";
+    }
+
+    if (e.clientY <= threshold && buttonVisible) {
+        buttonVisible = false;
+        buttonWrapper.classList.remove("show-button");
+        buttonWrapper.classList.add("hide-button");
+        buttonWrapper.style.pointerEvents = "none";
+    }
+});
+
+/* prevent button from stop working */
+nextButton.addEventListener("click", () => {
+    document.body.style.pointerEvents = "none";
+    document.body.style.opacity = "0";
+    setTimeout(() => {
+        window.location.href = NEXT_PAGE_URL;
+    }, 500);
+});
+</script>
 
 </body>
 </html>
